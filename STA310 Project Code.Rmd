@@ -1,0 +1,65 @@
+---
+title: "STA310 Data Modelling"
+author: "Michael Andrzejewski"
+date: "11/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+## STA310 Project Code
+
+```{r}
+data = read.csv("OnlineNewsPopularity.csv")
+
+#Split data into training and testing data
+dt = sort(sample(nrow(data), nrow(data)*.7))
+train<-data[dt,]
+test<-data[-dt,]
+
+# train1 = select(train, c(40:61))
+# train2 = select(train, c(1:20) + c(25))
+# names(train2)
+
+
+#Create a smaller training dataset with only the most relevant variables
+train1 = subset(train, select = c("n_tokens_title","n_tokens_content","n_unique_tokens","n_non_stop_words","num_hrefs","num_self_hrefs","num_imgs","num_videos","average_token_length","num_keywords","data_channel_is_lifestyle","data_channel_is_entertainment","data_channel_is_bus","data_channel_is_socmed","data_channel_is_tech","data_channel_is_world","kw_min_min","kw_max_min","kw_avg_min","kw_min_max","kw_max_max","kw_avg_max","kw_min_avg","kw_max_avg","kw_avg_avg","self_reference_min_shares","self_reference_max_shares","self_reference_avg_sharess", "shares"))
+names(train1)
+
+#Create a smaller training dataset with only the most relevant variables
+train2 = subset(train, select = c("weekday_is_monday", "weekday_is_tuesday", "weekday_is_wednesday", "weekday_is_thursday", "weekday_is_friday", "weekday_is_saturday", "weekday_is_sunday", "is_weekend", "LDA_00", "LDA_01", "LDA_02", "LDA_03", "LDA_04", "global_subjectivity", "global_sentiment_polarity", "global_rate_positive_words", "global_rate_negative_words", "rate_positive_words", "rate_negative_words", "avg_positive_polarity", "min_positive_polarity", "max_positive_polarity", "avg_negative_polarity", "min_negative_polarity", "max_negative_polarity", "title_subjectivity", "title_sentiment_polarity", "abs_title_subjectivity", "abs_title_sentiment_polarity", "shares"))
+names(train2)
+
+train.final = subset(train, select = c("abs_title_subjectivity","abs_title_sentiment_polarity"))
+
+#Early residual plots
+
+
+#Best subsets using variables selected by literature
+#Literature title:
+#Literature Link: https://towardsdatascience.com/predicting-online-news-popularity-part-1-aae9a4f7f1a4
+library(leaps)
+regfit1 = regsubsets(shares ~ ., data = train1, nvmax = 15)
+regfit2 = regsubsets(shares ~ ., data = train2, nvmax = 15)
+
+#Final model residual plots
+plot(regfit1)
+plot(regfit2)
+
+plot(regfit1, scale = "r2")
+
+summary(regfit1)
+summary(regfit2)
+
+#Regfit1 variables:
+#n_tokens_title n_tokens_content n_unique_tokens n_non_stop_words num_hrefs num_self_hrefs num_imgs
+
+#Best subsets visual graph
+
+```
+
+
+
